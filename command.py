@@ -180,7 +180,35 @@ class Load_Save_to_JSON(Command):
             }})
 
         Save_JSON(song_data).execute()
+        return song_data
+    
+class Load_Dir(Command):
+    def execute(self):
+        files = os.listdir("music")
+        song_data = {}
 
+        for file in files:
+            song_path = os.path.join("music", file)
+            title = Get_Title(song_path).execute()
+            artist = Get_Artist(song_path).execute()
+            album = Get_Album(song_path).execute()
+            genre = Get_Genre(song_path).execute()
+            duration = Get_Duration(song_path).execute()
+            song_data.update({title:{
+                "title": title,
+                "artist": artist,
+                "album": album,
+                "duration": duration,
+                "filename": file,
+                "file_path": song_path,
+                "play_counter": 0,
+                "is_favorite": False,
+                "genre": genre,
+                "playlist": []
+            }})
+        
+        return song_data
+    
 # Save the changes in JSON
 class Save_JSON(Command):
     def __init__(self, data):

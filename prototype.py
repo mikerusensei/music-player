@@ -12,8 +12,6 @@ class Prototype(tk.Tk):
 
         pygame.init()
         pygame.mixer.init()
-
-        #self.focused_listbox = self.focus_get()
         
         # Color varibles
         self.bg_color = "#660000"
@@ -54,27 +52,18 @@ class Prototype(tk.Tk):
         Config_WidgetPadding(self.currently_playing_frame, 20, 10).execute()
         Config_WidgetPadding(self.main_menu_frame, 20, 10).execute()
         Config_WidgetPadding(self.main_menu_btn_frame, 20, 15).execute()
-        
-        # Here naman yung widget size
-        # Config_WidgetSize(self.main_menu_btn_frame, 20, 2).execute()
-        # #Config_WidgetSize(self.btn_control_frame, 5, 2).execute()
-        # Config_WidgetSize(self.add_on_btn_frame, 20, 3).execute()
 
         # Font Size
         Config_WidgetFontSize(self.main_menu_btn_frame, "Arial", 15).execute()
         Config_WidgetFontSize(self.btn_control_frame, "Arial", 15).execute()
 
         self.main_menu_frame.tkraise()
-        # Note babaguhin lang yung numbers and yung unag number is width
-        # and yug second is height. Sa padding naman padx yung una and pady
-        # yung paalawa
 
         self.run()
 
     def __configure_window(self):
         self.title("Mellifluous")
-        #self.geometry("700x500")
-        #self.resizable(False, False)
+        self.resizable(False, False)
         self.configure(bg="#660000")
 
     def __add_frames(self):
@@ -328,12 +317,25 @@ class Prototype(tk.Tk):
 
     def load_songs(self):
         if os.path.exists("music_data.json"):
-            self.music_data = Load_JSON().execute()
+            existing_songs = Load_JSON().execute()
+            new_songs = Load_Dir().execute()
+
+            # Update existing_songs with new_songs without overwriting existing entries
+            for key, value in new_songs.items():
+                if key not in existing_songs:
+                    existing_songs[key] = value
+
+            sorted_data = dict(sorted(existing_songs.items()))
+
+            Save_JSON(sorted_data).execute()
+
+            self.music_data = sorted_data
+            
         else:   
             Load_Save_to_JSON().execute()
             self.music_data = Load_JSON().execute()
 
-        self.all_songs_listbox.delete(0, tk.END)
+        #self.all_songs_listbox.delete(0, tk.END)
 
         for song_title, song_data in self.music_data.items():
             if song_data["is_favorite"] == True:
@@ -353,7 +355,6 @@ class Prototype(tk.Tk):
                 self.genre_listbox.insert(tk.END, song_data["genre"])
 
         self.load_frequently_played()
-        #self.after(60000, self.load_songs)
 
     def play_song(self, event=None):
         if not self.is_playing:
@@ -555,15 +556,35 @@ class Prototype(tk.Tk):
                     self.genre_song_listbox.insert(tk.END, song_data["title"])
 
     def load_frequently_played(self):
+        # Get the current selection index
+        selected_index = self.frequently_played_listbox.curselection()
+        
+        # Clear the listbox
+        self.frequently_played_listbox.delete(0, tk.END)
+
         frequently_played = {}
+        self.music_data = Load_JSON().execute()
 
         for song_title, song_data in self.music_data.items():
             frequently_played.update({song_title: song_data["play_counter"]})
 
         sorted_frequently = self.bubble_sort(frequently_played)
         print(sorted_frequently)
-        for item in sorted_frequently:
-            self.frequently_played_listbox.insert(tk.END, item)
+        for key, val in sorted_frequently.items():
+            if val != 0:
+                self.frequently_played_listbox.insert(tk.END, key)
+
+        # Check if there was a previous selection and reselect it if it's still valid
+        if selected_index:
+            # If the previous selection index is within the range of the new listbox contents
+            if selected_index[0] < self.frequently_played_listbox.size():
+                # Reselect the item
+                self.frequently_played_listbox.selection_set(selected_index)
+                self.frequently_played_listbox.activate(selected_index)
+
+        # Schedule the function to run again after 30 seconds
+        self.after(20000, self.load_frequently_played)
+
     
     def bubble_sort(self, dict1:dict):
         items = list(dict1.items())
