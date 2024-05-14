@@ -4,6 +4,7 @@ group effort in order to complete this system.
 
 ## Update :rocket:
 * Added new assets
+* Refactor code for prototype.py and command.py
 
 
 ## Pre-requisites
