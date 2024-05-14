@@ -320,7 +320,6 @@ class Prototype(tk.Tk):
             existing_songs = Load_JSON().execute()
             new_songs = Load_Dir().execute()
 
-            # Update existing_songs with new_songs without overwriting existing entries
             for key, value in new_songs.items():
                 if key not in existing_songs:
                     existing_songs[key] = value
@@ -334,8 +333,6 @@ class Prototype(tk.Tk):
         else:   
             Load_Save_to_JSON().execute()
             self.music_data = Load_JSON().execute()
-
-        #self.all_songs_listbox.delete(0, tk.END)
 
         for song_title, song_data in self.music_data.items():
             if song_data["is_favorite"] == True:
@@ -370,7 +367,6 @@ class Prototype(tk.Tk):
                 elif self.frequently_played_listbox.curselection():
                     self.load_song_to_pygame(self.frequently_played_listbox)
                 else:
-                    # If no item is selected, print a message or handle it as per your requirement
                     MsgBx_ShowWarning("Please select a song!").execute()
             else:
                 self.unpause_song()
@@ -379,11 +375,10 @@ class Prototype(tk.Tk):
 
     def load_song_to_pygame(self, listbox:tk.Listbox):
         self.play_text.set(value="\u23f8")
-        # Get the index of the selected item
+
         self.selected_index = listbox.curselection()[0]
-        # Get the corresponding song data from the JSON
+
         self.song_data = self.music_data[listbox.get(self.selected_index)]
-        print(f"Song data play btn {self.song_data}\n")
 
         title = self.song_data["title"]
         album = self.song_data["album"]
@@ -404,7 +399,6 @@ class Prototype(tk.Tk):
         self.is_playing = True
         self.from_start = True
 
-        #self.check(self.song_data, self.music_data)
         # Start the counter updater
         self.update_counter()
 
@@ -495,25 +489,27 @@ class Prototype(tk.Tk):
         self.selected_index += 1
         
         if self.selected_index < listbox.size():
-            # Get the selected item from the listbox
             self.song_data = self.music_data[listbox.get(self.selected_index)]
-            print(f"Song data playnext btn {self.song_data}\n")
-            # Retrieve the file path of the selected song
+
             file_path = self.song_data["file_path"]
             self.music_title.set(self.song_data["title"])
             self.music_album.set(self.song_data["album"])
             self.music_length.set(self.song_data["duration"])
+
             pygame.mixer.music.load(file_path)
             pygame.mixer.music.play()
+
             self.is_playing = True
             self.from_start = True
 
             Add_Count(self.song_data, self.music_data).execute()
+
             self.play_text.set(value="⏸")
 
             listbox.selection_clear(0, tk.END)  # Clear previous selection
             listbox.selection_set(self.selected_index)  # Set new selection
             listbox.activate(self.selected_index)
+
             self.update_counter()
         else:
             self.stop_song()
@@ -537,7 +533,6 @@ class Prototype(tk.Tk):
 
             for song_title, song_data in self.music_data.items():
                 if song_data["album"] == selected_album:
-                    # Insert the song title into the album songs listbox
                     self.album_song_listbox.insert(tk.END, song_data["title"])
         else:
             print("No album selected")
@@ -552,14 +547,11 @@ class Prototype(tk.Tk):
 
             for song_title, song_data in self.music_data.items():
                 if song_data["genre"] == selected_genre:
-                    # Insert the song title into the album songs listbox
                     self.genre_song_listbox.insert(tk.END, song_data["title"])
 
     def load_frequently_played(self):
-        # Get the current selection index
         selected_index = self.frequently_played_listbox.curselection()
         
-        # Clear the listbox
         self.frequently_played_listbox.delete(0, tk.END)
 
         frequently_played = {}
@@ -574,9 +566,7 @@ class Prototype(tk.Tk):
             if val != 0:
                 self.frequently_played_listbox.insert(tk.END, key)
 
-        # Check if there was a previous selection and reselect it if it's still valid
         if selected_index:
-            # If the previous selection index is within the range of the new listbox contents
             if selected_index[0] < self.frequently_played_listbox.size():
                 # Reselect the item
                 self.frequently_played_listbox.selection_set(selected_index)
@@ -618,13 +608,9 @@ class Prototype(tk.Tk):
             self.music_start_length.set(f"{minutes:02d}:{seconds:02d}")
             total_duration_seconds = int(self.music_length.get().split(":")[0]) * 60 + int(self.music_length.get().split(":")[1])
 
-            # Schedule the function to run again after 1 second
             if self.music_start_counter > total_duration_seconds:
                 self.stop_song()
                 self.play_next()
-
-            # elif not self.is_playing:   
-            #     self.after_cancel(1000, self.update_counter)
             else:
                 self.update_counter_id = self.after(1000, self.update_counter)  
 
