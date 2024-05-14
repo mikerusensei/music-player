@@ -613,6 +613,3 @@ class Prototype(tk.Tk):
 
     def run(self):
         self.mainloop()
-
-if __name__ == '__main__':
-    proto = Prototype()
