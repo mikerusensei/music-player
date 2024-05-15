@@ -1,5 +1,5 @@
 from command import *
-from playlist import Add_Playlist
+from playlist_window import Add_Playlist
 
 import tkinter as tk
 import os
@@ -129,6 +129,14 @@ class Prototype(tk.Tk):
         self.genre_song_frame.grid(column=0, row=1, sticky="ns")
         #######################
 
+        ##### Playlist Frame #####
+        self.playlist_frame = tk.LabelFrame(self.main_frame, text="Playlist Frame", bg=self.frame_color)
+        self.playlist_frame.grid(column=0, row=1, sticky="ns")
+
+        self.playlist_song_frame = tk.LabelFrame(self.main_frame, text="Playlist Song Frame", bg=self.frame_color)
+        self.playlist_song_frame.grid(column=0, row=1, sticky="ns")
+        ##########################
+
     def __add_buttons(self):
         ##### Buttons Main Menu Frame [Main Menu BTN Frame] #####
         all_songs_btn = tk.Button(self.main_menu_btn_frame, image=self.all_songs_img, command=lambda: Show_Frame(self.all_songs_frame).execute())
@@ -140,7 +148,7 @@ class Prototype(tk.Tk):
         albums_btn = tk.Button(self.main_menu_btn_frame, image=self.albums_img, command=lambda: Show_Frame(self.album_frame).execute())
         albums_btn.grid(column=0, row=1, sticky="ew")
 
-        playlist_btn = tk.Button(self.main_menu_btn_frame, image=self.playlist_img)
+        playlist_btn = tk.Button(self.main_menu_btn_frame, image=self.playlist_img, command=lambda: Show_Frame(self.playlist_frame).execute())
         playlist_btn.grid(column=1, row=1, sticky="ew")
 
         genre_btn = tk.Button(self.main_menu_btn_frame, image=self.genre_img, command=lambda: Show_Frame(self.genre_frame).execute())
@@ -213,6 +221,15 @@ class Prototype(tk.Tk):
         backbtn6.pack(side=tk.BOTTOM)
         ############################
 
+        ##### Playlist Frame #####
+        backbtn7 = tk.Button(self.playlist_frame, text="Back", command=lambda:Hide_Frame(self.playlist_frame).execute(),
+                            width=14, height=2)
+        backbtn7.pack(side=tk.BOTTOM)
+        openbtn7 = tk.Button(self.playlist_frame, text="Open", command=self.check_selected,
+                            width=14, height=2)
+        openbtn7.pack(side=tk.BOTTOM)
+        ##########################
+        
     def __add_labels(self):
         brand = tk.Label(self.main_frame, text="MELLIFLUOUS", font=("Arial", 15, "bold"), bg=self.bg_color, fg="white")
         brand.grid(column=0, row=0, sticky="w")
@@ -296,6 +313,14 @@ class Prototype(tk.Tk):
                                             yscrollcommand=self.scroll_y5.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.frequently_played_listbox.pack(fill="both")
 
+        self.playlist_listbox = tk.Listbox(self.playlist_frame,width=46, height=20, font=("Arial", 12, "bold"),
+                                            yscrollcommand=self.scroll_y6.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
+        self.playlist_listbox.pack(fill="both")
+
+        self.playlist_song_listbox = tk.Listbox(self.playlist_song_frame,width=46, height=20, font=("Arial", 12, "bold"),
+                                            yscrollcommand=self.scroll_y7.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
+        self.playlist_song_listbox.pack(fill="both")
+
     def __add_scrollbar(self):
         self.scroll_y = tk.Scrollbar(self.all_songs_frame, orient=tk.VERTICAL)
         self.scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
@@ -314,6 +339,12 @@ class Prototype(tk.Tk):
 
         self.scroll_y5 = tk.Scrollbar(self.genre_song_frame, orient=tk.VERTICAL)
         self.scroll_y5.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.scroll_y6 = tk.Scrollbar(self.playlist_frame, orient=tk.VERTICAL)
+        self.scroll_y6.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.scroll_y7 = tk.Scrollbar(self.playlist_song_frame, orient=tk.VERTICAL)
+        self.scroll_y7.pack(side=tk.RIGHT, fill=tk.Y)
 
     def load_songs(self):
         if os.path.exists("music_data.json"):
@@ -352,6 +383,9 @@ class Prototype(tk.Tk):
                 self.genre_listbox.insert(tk.END, song_data["genre"])
 
         self.load_frequently_played()
+
+    def load_playlist(self):
+        pass
 
     def play_song(self, event=None):
         if not self.is_playing:
@@ -522,6 +556,9 @@ class Prototype(tk.Tk):
         elif self.genre_listbox.curselection():
             self.load_genre()
             Show_Frame(self.genre_song_frame).execute()
+        elif self.playlist_listbox.curselection():
+            #self.load_playlist()
+            Show_Frame(self.playlist_song_frame).execute()
         else:
             MsgBx_ShowWarning("Please select a selection").execute()
 
@@ -596,7 +633,7 @@ class Prototype(tk.Tk):
         if not self.add_playlist_window:
             self.add_playlist_window = Add_Playlist(self)
         
-        self.iconify()
+        #self.iconify()
         self.add_playlist_window.lift()
 
     def update_counter(self):
