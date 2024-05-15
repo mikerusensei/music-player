@@ -371,7 +371,7 @@ class Prototype(tk.Tk):
 
             self.all_songs_listbox.insert(tk.END, song_data["title"])
 
-            if song_data["album"] not in self.genre_listbox.get(0, tk.END):
+            if song_data["album"] not in self.album_listbox.get(0, tk.END):
                 if song_data["album"] is None:
                     song_data["album"] = "Unknown Album"
                 self.album_listbox.insert(tk.END, song_data["album"])
