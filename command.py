@@ -175,11 +175,10 @@ class Load_Save_to_JSON(Command):
                 "file_path": song_path,
                 "play_counter": 0,
                 "is_favorite": False,
-                "genre": genre,
-                "playlist": []
+                "genre": genre
             }})
 
-        Save_JSON(song_data).execute()
+        Save_JSON(song_data, "music_data.json").execute()
         return song_data
     
 class Load_Dir(Command):
@@ -204,34 +203,37 @@ class Load_Dir(Command):
                 "play_counter": 0,
                 "is_favorite": False,
                 "genre": genre,
-                "playlist": []
             }})
         
         return song_data
     
 # Save the changes in JSON
 class Save_JSON(Command):
-    def __init__(self, data):
+    def __init__(self, data, file_path):
         self.__data = data
+        self.__file_path = file_path
 
     def execute(self):
-        with open("music_data.json", "w") as filewrite:
+        with open(self.__file_path, "w") as filewrite:
             json.dump(self.__data, filewrite, indent=4)
 
-# Load the JSON file
 class Load_JSON(Command):
+    def __init__(self, file_path):
+        self.__file_path = file_path
+
     def execute(self):
-        if os.path.exists("music_data.json"):
-            with open("music_data.json", "r") as file:
-                return json.load(file)
+        if os.path.exists(self.__file_path):
+            with open(self.__file_path, "r") as fileread:
+                return json.load(fileread)
         else:
-            return  {}
+            return {}
 
 # Update the play_counter
 class Add_Count(Command):
-    def __init__(self, dict1:dict, dict2:dict):
+    def __init__(self, dict1:dict, dict2:dict, file_path:str):
         self.__dict1 = dict1
         self.__dict2 = dict2
+        self.__file_path = file_path
         self.__music_data = self.__dict2
 
     def execute(self):
@@ -240,7 +242,7 @@ class Add_Count(Command):
         for key, value in self.__dict2.items():
             if key == title:
                 value["play_counter"] += 1
-                Save_JSON(self.__music_data).execute()
+                Save_JSON(self.__music_data, self.__file_path).execute()
 
 class Change_Favorite(Command):
     def __init__(self, dict1:dict, dict2:dict):
@@ -253,7 +255,7 @@ class Change_Favorite(Command):
         for key, value in self.__dict2.items():
             if key == title:
                 value["is_favorite"] = True
-                Save_JSON(self.__dict2).execute()
+                Save_JSON(self.__dict2, "music_data.json").execute()
 
 class Add_To_Favorites(Command):
     def __init__(self, song_data:dict, music_data:dict, listbox:tk.Listbox):
@@ -268,3 +270,33 @@ class Add_To_Favorites(Command):
             MsgBx_ShowInfo("Successfully Added to favorites!").execute()
         else:
             MsgBx_ShowInfo("Song is already in favorites!").execute()
+
+class Create_Playlist(Command):
+    def __init__(self, title:str):
+        self.__title = title
+        self.__play_count = 0
+        self.__songs = []
+
+    def execute(self):
+        with open (f"{self.__title}.m3u", "w") as filewrite:
+            pass
+
+class Bubble_Sort(Command):
+    def __init__(self, dict1:dict):
+        self.__dict1 = dict1
+
+    def execute(self):
+        items = list(self.__dict1.items())
+        length = len(items)
+
+        for i in range(length):
+            swapped = False
+            for j in range(0, length-i-1):
+                if items[j][1] < items[j+1][1]: 
+                    items[j], items[j+1] = items[j+1], items[j]
+                    swapped = True
+
+            if not swapped:
+                break
+
+        return dict(items)

@@ -1,5 +1,4 @@
 from command import *
-from playlist_window import Add_Playlist
 
 import tkinter as tk
 import os
@@ -16,6 +15,7 @@ class Prototype(tk.Tk):
         # Color varibles
         self.bg_color = "#660000"
         self.frame_color = "#6fa8dc"
+        self.playlists = Load_JSON("playlist.json").execute()
 
         self.music_title = tk.StringVar(value="Music Title")
         self.music_album = tk.StringVar(value="Music Album")
@@ -33,6 +33,7 @@ class Prototype(tk.Tk):
         self.__configure_window()
         self.__add_pictures()
         self.__add_frames()
+        self.__add_entry()
         self.__add_labels()
         self.__add_scrollbar()
         self.__add_listbox()
@@ -41,8 +42,8 @@ class Prototype(tk.Tk):
         self.load_songs()
 
         # Bind Keyboard events
-        self.bind("<s>", self.stop_song)
-        self.bind("<space>", self.play_song)
+        self.bind("<Up>", self.stop_song)
+        self.bind("<Down>", self.play_song)
         self.bind("<Right>", self.play_next)
         self.bind("<Left>", self.play_prev)
 
@@ -130,11 +131,20 @@ class Prototype(tk.Tk):
         #######################
 
         ##### Playlist Frame #####
+        self.create_add_playlist_frame = tk.LabelFrame(self.main_frame, text="Playlist", bg=self.frame_color)
+        self.create_add_playlist_frame.grid(column=0, row=1, sticky="nsew")
+
         self.playlist_frame = tk.LabelFrame(self.main_frame, text="Playlist Frame", bg=self.frame_color)
         self.playlist_frame.grid(column=0, row=1, sticky="ns")
 
         self.playlist_song_frame = tk.LabelFrame(self.main_frame, text="Playlist Song Frame", bg=self.frame_color)
         self.playlist_song_frame.grid(column=0, row=1, sticky="ns")
+
+        self.create_playlist_frame = tk.LabelFrame(self.create_add_playlist_frame, text="Create laylist", bg= self.frame_color)
+        self.create_playlist_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.add_playlist_frame = tk.LabelFrame(self.create_add_playlist_frame, text="Add Playlist", bg=self.frame_color)
+        self.add_playlist_frame.pack(fill=tk.BOTH, expand=True )
         ##########################
 
     def __add_buttons(self):
@@ -175,7 +185,7 @@ class Prototype(tk.Tk):
         fave_btn = tk.Button(self.add_on_btn_frame, image=self.add_fav_img, command=lambda: Add_To_Favorites(self.song_data, self.music_data, self.fav_song_listbox).execute()) #self.add_to_favorites(self.song_data)
         fave_btn.grid(column=0, row=0, sticky="ew")
 
-        add_to_playlist_btn = tk.Button(self.add_on_btn_frame, image=self.add_playlist_img, command=self.add_to_playlist)
+        add_to_playlist_btn = tk.Button(self.add_on_btn_frame, image=self.add_playlist_img, command=lambda: Show_Frame(self.create_add_playlist_frame).execute())
         add_to_playlist_btn.grid(column=1, row=0, sticky="ew")
 
         #######################################################
@@ -228,6 +238,16 @@ class Prototype(tk.Tk):
         openbtn7 = tk.Button(self.playlist_frame, text="Open", command=self.check_selected,
                             width=14, height=2)
         openbtn7.pack(side=tk.BOTTOM)
+
+        self.create_playlist_btn = tk.Button(self.create_playlist_frame, text="Create Playlist", command=self.create_playlist)
+        self.create_playlist_btn.pack(fill=tk.BOTH, expand=True)
+
+        self.add_playlist_btn = tk.Button(self.add_playlist_frame, text="Add to Playlist", command=self.add_playlist)
+        self.add_playlist_btn.pack(fill=tk.BOTH, expand=True)
+
+        backbtn8 = tk.Button(self.create_add_playlist_frame, text="Back", command=lambda:Hide_Frame(self.create_add_playlist_frame).execute(),
+                            width=14, height=2)
+        backbtn8.pack(side=tk.BOTTOM)
         ##########################
         
     def __add_labels(self):
@@ -346,9 +366,16 @@ class Prototype(tk.Tk):
         self.scroll_y7 = tk.Scrollbar(self.playlist_song_frame, orient=tk.VERTICAL)
         self.scroll_y7.pack(side=tk.RIGHT, fill=tk.Y)
 
+    def __add_entry(self):
+        self.create_playlist_name_entry = tk.Entry(self.create_playlist_frame)
+        self.create_playlist_name_entry.pack(fill=tk.BOTH, expand=True)
+
+        self.add_playlist_name_entry = tk.Entry(self.add_playlist_frame)
+        self.add_playlist_name_entry.pack(fill=tk.BOTH, expand=True)
+
     def load_songs(self):
         if os.path.exists("music_data.json"):
-            existing_songs = Load_JSON().execute()
+            existing_songs = Load_JSON("music_data.json").execute()
             new_songs = Load_Dir().execute()
 
             for key, value in new_songs.items():
@@ -357,13 +384,13 @@ class Prototype(tk.Tk):
 
             sorted_data = dict(sorted(existing_songs.items()))
 
-            Save_JSON(sorted_data).execute()
+            Save_JSON(sorted_data, "music_data.json").execute()
 
             self.music_data = sorted_data
             
         else:   
             Load_Save_to_JSON().execute()
-            self.music_data = Load_JSON().execute()
+            self.music_data = Load_JSON("music_data.json").execute()
 
         for song_title, song_data in self.music_data.items():
             if song_data["is_favorite"] == True:
@@ -376,16 +403,23 @@ class Prototype(tk.Tk):
                     song_data["album"] = "Unknown Album"
                 self.album_listbox.insert(tk.END, song_data["album"])
 
-
             if song_data["genre"] not in self.genre_listbox.get(0, tk.END):
                 if song_data["genre"] is None:
                     song_data["genre"] = "Unknown Genre"
                 self.genre_listbox.insert(tk.END, song_data["genre"])
 
+        
+        self.load_playlist()
         self.load_frequently_played()
 
     def load_playlist(self):
-        pass
+        self.playlists = Load_JSON("playlist.json").execute()
+            
+        for playlist_title, playlist_data in self.playlists.items():
+            if playlist_title not in self.playlist_listbox.get(0, tk.END):
+                self.playlist_listbox.insert(tk.END, playlist_title)
+
+        self.after(1000, self.load_playlist)
 
     def play_song(self, event=None):
         if not self.is_playing:
@@ -427,7 +461,7 @@ class Prototype(tk.Tk):
         pygame.mixer.music.load(file_path)
         pygame.mixer.music.play()
 
-        Add_Count(self.song_data, self.music_data).execute()
+        Add_Count(self.song_data, self.music_data, "music_data.json").execute()
 
         # Update playing status and reset counter
         self.is_playing = True
@@ -481,7 +515,6 @@ class Prototype(tk.Tk):
         if self.selected_index >= 0:
             # Get the selected item from the listbox
             self.song_data = self.music_data[listbox.get(self.selected_index)]
-            print(f"Song data playnext btn {self.song_data}\n")
             # Retrieve the file path of the selected song
             file_path = self.song_data["file_path"]
             self.music_title.set(self.song_data["title"])
@@ -492,7 +525,7 @@ class Prototype(tk.Tk):
             self.is_playing = True
             self.from_start = True
 
-            Add_Count(self.song_data, self.music_data).execute()
+            Add_Count(self.song_data, self.music_data, "music_data.json").execute()
             self.play_text.set(value="⏸")
 
             listbox.selection_clear(0, tk.END)  # Clear previous selection
@@ -536,7 +569,7 @@ class Prototype(tk.Tk):
             self.is_playing = True
             self.from_start = True
 
-            Add_Count(self.song_data, self.music_data).execute()
+            Add_Count(self.song_data, self.music_data, "music_data.json").execute()
 
             self.play_text.set(value="⏸")
 
@@ -557,7 +590,7 @@ class Prototype(tk.Tk):
             self.load_genre()
             Show_Frame(self.genre_song_frame).execute()
         elif self.playlist_listbox.curselection():
-            #self.load_playlist()
+            self.load_playlist_song()
             Show_Frame(self.playlist_song_frame).execute()
         else:
             MsgBx_ShowWarning("Please select a selection").execute()
@@ -585,20 +618,39 @@ class Prototype(tk.Tk):
             for song_title, song_data in self.music_data.items():
                 if song_data["genre"] == selected_genre:
                     self.genre_song_listbox.insert(tk.END, song_data["title"])
+                    if song_title not in self.genres[selected_genre]:
+                        self.genres[selected_genre].append(song_data["title"])
 
+    def load_playlist_song(self):
+        self.playlists = Load_JSON("playlist.json").execute()
+
+        self.playlist_song_listbox.delete(0, tk.END)
+
+        if self.playlist_listbox.curselection():
+            selected_playlist_index = self.playlist_listbox.curselection()[0]
+            selected_playlist = self.playlist_listbox.get(selected_playlist_index)
+
+            for playlist_title, playlist_data in self.playlists.items():
+                if playlist_title == selected_playlist:
+                    songs = playlist_data["songs"]
+                    print(songs)
+                    for song in songs:
+                        self.playlist_song_listbox.insert(tk.END, song)
+                    break
+
+            
     def load_frequently_played(self):
         selected_index = self.frequently_played_listbox.curselection()
         
         self.frequently_played_listbox.delete(0, tk.END)
 
         frequently_played = {}
-        self.music_data = Load_JSON().execute()
+        self.music_data = Load_JSON("music_data.json").execute()
 
         for song_title, song_data in self.music_data.items():
             frequently_played.update({song_title: song_data["play_counter"]})
 
-        sorted_frequently = self.bubble_sort(frequently_played)
-        print(sorted_frequently)
+        sorted_frequently = Bubble_Sort(frequently_played).execute()
         for key, val in sorted_frequently.items():
             if val != 0:
                 self.frequently_played_listbox.insert(tk.END, key)
@@ -612,29 +664,42 @@ class Prototype(tk.Tk):
         # Schedule the function to run again after 30 seconds
         self.after(20000, self.load_frequently_played)
 
-    
-    def bubble_sort(self, dict1:dict):
-        items = list(dict1.items())
-        length = len(items)
+    def create_playlist(self):
+        entry = self.create_playlist_name_entry.get()
 
-        for i in range(length):
-            swapped = False
-            for j in range(0, length-i-1):
-                if items[j][1] < items[j+1][1]: 
-                    items[j], items[j+1] = items[j+1], items[j]
-                    swapped = True
+        exisiting_playlists = Load_JSON("playlist.json").execute()
 
-            if not swapped:
+        exisiting_playlists.update({entry:{"play_count": 0, "songs": [self.song_data["title"]]}})
+
+        Save_JSON(exisiting_playlists, "playlist.json").execute()
+
+        MsgBx_ShowInfo(f"Succesfully created {entry} playlist!").execute()
+        self.create_playlist_name_entry.delete(0, 'end')
+        Hide_Frame(self.create_add_playlist_frame).execute()
+
+    def add_playlist(self):
+        self.playlists = Load_JSON("playlist.json").execute()
+        entry = self.add_playlist_name_entry.get()
+
+        playlist_found = False
+
+        for playlist_name, playlist_data in self.playlists.items():
+            if playlist_name.lower() == entry.lower():
+                playlist_found = True
+                if self.song_data["title"] not in playlist_data["songs"]:
+                    playlist_data["songs"].append(self.song_data["title"])
+                    Save_JSON(self.playlists, "playlist.json").execute()
+                    MsgBx_ShowInfo(f"Successfully added to {playlist_name}").execute()
+                    self.add_playlist_name_entry.delete(0, 'end')
+                    Hide_Frame(self.create_add_playlist_frame).execute()
+                else:
+                    self.add_playlist_name_entry.delete(0, 'end')
+                    MsgBx_ShowInfo("Song is in the playlist").execute()
+                    Hide_Frame(self.create_add_playlist_frame).execute()
+
                 break
-
-        return dict(items)
-    
-    def add_to_playlist(self):
-        if not self.add_playlist_window:
-            self.add_playlist_window = Add_Playlist(self)
-        
-        #self.iconify()
-        self.add_playlist_window.lift()
+        if not playlist_found:
+            MsgBx_ShowWarning("No playlist found").execute()
 
     def update_counter(self):
         if self.is_playing:
@@ -653,7 +718,6 @@ class Prototype(tk.Tk):
 
         else:
             self.after_cancel(self.update_counter)
-
 
     def run(self):
         self.mainloop()
