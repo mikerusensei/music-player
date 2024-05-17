@@ -2,9 +2,10 @@
 This repository was made in partial requirement for the subject of Analysis of Algorithms `ANALGOR`. It is a
 group effort in order to complete this system.
 
-## Update :rocket:
-* Added new assets
-* Refactor code for prototype.py and command.py
+## :rocket: Update
+* Added new mode `Mood`
+* Added Bubble sort for sorting the frequently played songs and playlist
+* Refactor codes for prototype.py and command.py
 
 
 ## Pre-requisites
@@ -15,10 +16,7 @@ group effort in order to complete this system.
 * Windows Operating System `(64 bit Architechture)`
 * Any IDE for Python Development
 
-## Special Thanks :sparkling_heart:
-Special thaks to my group partner who help to create this system/software.
-* Mercado, Bj Ashley
-without him, this software is not possible.
+Please refer to the the directions for more information
 
 ## Resources
 * Study Tonight - <https://www.studytonight.com/tkinter/music-player-application-using-tkinter>
@@ -28,6 +26,13 @@ without him, this software is not possible.
 
 All of the resources used was completely free of use and you can use it in your project, just give them the rightful
 credit.
+
+## Special Thanks :sparkling_heart:
+Special thaks to my group partner who help to create this system/software.
+* Mercado, Bj Ashley
+without him, this software is not possible.
+
+## Directions
 
 ## License
 The `music-player` is an open-sourced software licensed under the [MIT License](http://opensource.org/licenses/MIT).
