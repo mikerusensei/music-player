@@ -244,6 +244,18 @@ class Add_Count(Command):
                 value["play_counter"] += 1
                 Save_JSON(self.__music_data, self.__file_path).execute()
 
+class Add_Count_Playist(Command):
+    def __init__(self, dict1:dict, title:str, file_path:str):
+        self.__dict1 = dict1
+        self.__title = title
+        self.__file_path = file_path
+
+    def execute(self):
+        for key, value in self.__dict1.items():
+            if key == self.__title:
+                value["play_count"] += 1
+                Save_JSON(self.__dict1, self.__file_path).execute()
+        
 class Change_Favorite(Command):
     def __init__(self, dict1:dict, dict2:dict):
         self.__dict1 = dict1
@@ -270,16 +282,6 @@ class Add_To_Favorites(Command):
             MsgBx_ShowInfo("Successfully Added to favorites!").execute()
         else:
             MsgBx_ShowInfo("Song is already in favorites!").execute()
-
-class Create_Playlist(Command):
-    def __init__(self, title:str):
-        self.__title = title
-        self.__play_count = 0
-        self.__songs = []
-
-    def execute(self):
-        with open (f"{self.__title}.m3u", "w") as filewrite:
-            pass
 
 class Bubble_Sort(Command):
     def __init__(self, dict1:dict):
