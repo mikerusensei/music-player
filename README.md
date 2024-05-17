@@ -16,7 +16,7 @@ group effort in order to complete this system.
 * Windows Operating System `(64 bit Architechture)`
 * Any IDE for Python Development
 
-Please refer to the the ##direction for more information
+Please refer to the the [directions](https://github.com/mikerusensei/music-player/blob/main/README.md#directions) for more information
 
 ## Resources
 * Study Tonight - <https://www.studytonight.com/tkinter/music-player-application-using-tkinter>
