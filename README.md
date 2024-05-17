@@ -37,7 +37,7 @@ without him, this software is not possible.
 For modifying this application based on your preference [click this](https://github.com/mikerusensei/music-player/releases/tag/prototype)
 
 ### For Using
-For using this appliaction [click this]()
+For using this appliaction [click this](https://github.com/mikerusensei/music-player/releases/tag/v1.0)
 
 ## License
 The `music-player` is an open-sourced software licensed under the [MIT License](http://opensource.org/licenses/MIT).
