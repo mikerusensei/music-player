@@ -22,6 +22,7 @@ class Prototype(tk.Tk):
         self.music_album = tk.StringVar(value="Music Album")
         self.music_start_length = tk.StringVar(value="00:00")
         self.music_length = tk.StringVar(value="00:00")
+        self.option_var = tk.StringVar(value="Songs")
 
         self.play_text = tk.StringVar(value="\u23F5")
 
@@ -36,6 +37,7 @@ class Prototype(tk.Tk):
         self.__add_frames()
         self.__add_entry()
         self.__add_labels()
+        self.__add_dropdown()
         self.__add_scrollbar()
         self.__add_listbox()
         self.__add_buttons()
@@ -85,7 +87,7 @@ class Prototype(tk.Tk):
         self.main_menu_btn_frame = tk.Frame(self.main_menu_frame, bg=self.frame_color)
         self.main_menu_btn_frame.grid(column=0, row=0)
 
-        self.frequently_played_frame = tk.LabelFrame(self.main_menu_frame, text="Frequenlty")
+        self.frequently_played_frame = tk.Frame(self.main_menu_frame, bg=self.frame_color)
         self.frequently_played_frame.grid(column=0, row=1)
         ###########################
 
@@ -348,6 +350,11 @@ class Prototype(tk.Tk):
         self.next_img = tk.PhotoImage(file=next_path)
         self.preve_img = tk.PhotoImage(file=prev_path)
 
+    def __add_dropdown(self):
+        options = ["Songs", "Playlists"]
+        dropdown = tk.OptionMenu(self.frequently_played_frame, self.option_var, *options)
+        dropdown.pack(anchor="e")
+
     def __add_listbox(self):
         self.all_songs_listbox = tk.Listbox(self.all_songs_frame,width=46, height=20, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
@@ -436,14 +443,14 @@ class Prototype(tk.Tk):
             sorted_data = dict(sorted(existing_songs.items()))
 
             for song_title, song_data in sorted_data.items():
-                if song_data.get("album") is None:
+                if song_data["album"] is None:
                     song_data["album"] = "Unknown Album"
-                if song_data.get("genre") is None:
+                if song_data["genre"] is None:
                     song_data["genre"] = "Unknown Genre"
                     
             Save_JSON(sorted_data, "music_data.json").execute()
 
-            self.music_data = sorted_data
+            self.music_data = Load_JSON("music_data.json").execute()
             
         else:   
             Load_Save_to_JSON().execute()
@@ -469,7 +476,11 @@ class Prototype(tk.Tk):
                 self.genres_file[song_data["genre"]].append(song_data["title"])
 
         self.load_playlist()
-        self.load_frequently_played()
+
+        if self.option_var.get() == "Songs":
+            self.load_frequently_played()
+        if self.option_var.get() == "Playlists":
+            self.load_frequently_played_playlist()
     
         Save_JSON(self.music_data, "music_data.json").execute()
         Save_JSON(self.genres_file, "genre.json").execute()
@@ -737,7 +748,24 @@ class Prototype(tk.Tk):
                 self.frequently_played_listbox.activate(selected_index)
 
         # Schedule the function to run again after 30 seconds
-        self.after(20000, self.load_frequently_played)
+        self.after(10000, self.load_frequently_played)
+
+    def load_frequently_played_playlist(self):
+        self.frequently_played_listbox.delete(0, tk.END)
+
+        frequently_played = {}
+
+        self.playlists = Load_JSON("playlist.json").execute()
+
+        for playlist_title, playlist_data in self.playlists.items():
+            frequently_played.update({playlist_title: playlist_data["play_count"]})
+
+        sorted_frequently = Bubble_Sort(frequently_played).execute()
+
+        for key, val in sorted_frequently.items():
+            if val != 0:
+                self.frequently_played_listbox.insert(tk.END, key)
+
 
     def create_playlist(self):
         entry = self.create_playlist_name_entry.get()
@@ -758,6 +786,9 @@ class Prototype(tk.Tk):
 
         playlist_found = False
 
+        closest_playlist_name = None
+        min_distance = float('inf')
+
         for playlist_name, playlist_data in self.playlists.items():
             if playlist_name.lower() == entry.lower():
                 playlist_found = True
@@ -772,10 +803,18 @@ class Prototype(tk.Tk):
                     MsgBx_ShowInfo("Song is in the playlist").execute()
                     Hide_Frame(self.create_add_playlist_frame).execute()
                 break
+            else:
+                distance = Edit_Distance(playlist_name.lower(), entry.lower()).execute()
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_playlist_name = playlist_name
 
         if not playlist_found:
-            MsgBx_ShowWarning("No playlist found").execute()
-    
+            if closest_playlist_name:
+                MsgBx_ShowWarning(f"No exact match found!\nDid you mean '{closest_playlist_name}'?").execute()
+            else:
+                MsgBx_ShowWarning("No playlist found").execute()
+
     def update_counter(self):
         if self.is_playing:
             # Increment counter and update start length label
@@ -793,28 +832,13 @@ class Prototype(tk.Tk):
 
         else:
             self.after_cancel(self.update_counter)
-
-    def make_mood(self, mood:str, genres:list):
-        mood_songs = []
-
-        for genre_title, genre_songs in self.genres_file.items():
-            if genre_title in genres:
-                mood_songs.extend(genre_songs)
-
-        print(f"Not Shuffled {mood_songs}")
-
-        random.shuffle(mood_songs)
-
-        print(f"Shuffled {mood_songs}")
-
-        return mood_songs
     
     def make_mood_happy(self):
         self.mood_song_listbox.delete(0, tk.END)
 
         Show_Frame(self.mood_songs_frame).execute()
 
-        songs = self.make_mood("Happy", ["Pop", "Rock", "Hip Hop", "Disco"])
+        songs = Make_Mood("Happy", ["Pop", "Rock", "Hip Hop", "Disco"]).execute()
         
         for song in songs:
             self.mood_song_listbox.insert(tk.END, song)
@@ -824,7 +848,7 @@ class Prototype(tk.Tk):
 
         Show_Frame(self.mood_songs_frame).execute()
 
-        songs = self.make_mood("Sad", ["Classical", "Blues", "Rock"])
+        songs = Make_Mood("Sad", ["Classical", "Blues", "Rock"]).execute()
 
         for song in songs:
             self.mood_song_listbox.insert(tk.END, song)
@@ -834,7 +858,7 @@ class Prototype(tk.Tk):
 
         Show_Frame(self.mood_songs_frame).execute()
 
-        songs = self.make_mood("Chill", ["Classical", "Jazz"])
+        songs = Make_Mood("Chill", ["Classical", "Jazz"]).execute()
 
         for song in songs:
             self.mood_song_listbox.insert(tk.END, song)
@@ -844,7 +868,7 @@ class Prototype(tk.Tk):
 
         Show_Frame(self.mood_songs_frame).execute()
 
-        songs = self.make_mood("Sexy", ["Pop", "Classical", "Hip Hop", "Jazz", "Disco"])
+        songs = Make_Mood("Sexy", ["Pop", "Classical", "Hip Hop", "Jazz", "Disco"]).execute()
 
         for song in songs:
             self.mood_song_listbox.insert(tk.END, song)
@@ -854,7 +878,7 @@ class Prototype(tk.Tk):
 
         Show_Frame(self.mood_songs_frame).execute()
 
-        songs = self.make_mood("Travel", ["Pop", "Jazz"])
+        songs = Make_Mood("Travel", ["Pop", "Jazz"]).execute()
 
         for song in songs:
             self.mood_song_listbox.insert(tk.END, song)

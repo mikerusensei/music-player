@@ -4,6 +4,7 @@ from tkinter import messagebox
 
 import os
 import json
+import random
 import tkinter as tk
 
 class Command(ABC):
@@ -302,3 +303,48 @@ class Bubble_Sort(Command):
                 break
 
         return dict(items)
+    
+class Edit_Distance(Command):
+    def __init__(self, str1:str, str2:str):
+        self.__str1 = str1
+        self.__str2 = str2
+
+    def execute(self):
+        len1 = len(self.__str1)
+        len2 = len(self.__str2)
+
+        array = [[0] * (len2 + 1) for _ in range(len1 + 1)]
+        
+        i = j = 0
+
+        for i in range(len1 + 1):
+            for j in range(len2 + 1):
+                if i == 0:
+                    array[i][j] = j
+                elif j == 0:
+                    array[i][j] = i
+                elif self.__str1[i - 1] == self.__str2[j - 1]:
+                    array[i][j] = array[i - 1][j - 1]
+                else:
+                    array[i][j] = min(array[i][j - 1], array[i - 1][j], array[i - 1][j - 1]) + 1
+        
+        return array[len1][len2]
+    
+class Make_Mood(Command):
+    def __init__(self, mood:str, genres:list):
+        self.__mood = mood
+        self.__genres = genres
+        self.__mood_songs = []
+
+    def execute(self):
+        for genre_title, genre_songs in self.genres_file.items():
+            if genre_title in self.__genres:
+                self.__mood_songs.extend(genre_songs)
+
+        print(f"Not Shuffled {self.__mood_songs}")
+
+        random.shuffle(self.__mood_songs)
+
+        print(f"Shuffled {self.__mood_songs}")
+
+        return self.__mood_songs
