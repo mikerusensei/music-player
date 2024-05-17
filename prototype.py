@@ -54,6 +54,7 @@ class Prototype(tk.Tk):
         Config_WidgetPadding(self.currently_playing_frame, 20, 10).execute()
         Config_WidgetPadding(self.main_menu_frame, 20, 10).execute()
         Config_WidgetPadding(self.main_menu_btn_frame, 20, 15).execute()
+        Config_WidgetPadding(self.all_btn_frame, 10, 10).execute()
 
         # Font Size
         Config_WidgetFontSize(self.main_menu_btn_frame, "Arial", 15).execute()
@@ -78,10 +79,10 @@ class Prototype(tk.Tk):
         self.main_frame.pack(expand=True)
 
         ##### Main Menu Frame #####
-        self.main_menu_frame = tk.LabelFrame(self.main_frame, text="Main Menu", bg=self.frame_color)
+        self.main_menu_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.main_menu_frame.grid(column=0, row=1, sticky="ns")
 
-        self.main_menu_btn_frame = tk.LabelFrame(self.main_menu_frame,text="BTn", bg=self.frame_color)
+        self.main_menu_btn_frame = tk.Frame(self.main_menu_frame, bg=self.frame_color)
         self.main_menu_btn_frame.grid(column=0, row=0)
 
         self.frequently_played_frame = tk.LabelFrame(self.main_menu_frame, text="Frequenlty")
@@ -89,19 +90,19 @@ class Prototype(tk.Tk):
         ###########################
 
         ##### Currently Playing Frame #####
-        self.currently_playing_frame = tk.LabelFrame(self.main_frame, text="Currently Playing Frame", bg=self.frame_color)
+        self.currently_playing_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.currently_playing_frame.grid(column=1, row=1, sticky="ns")
 
-        self.song_details_frame = tk.LabelFrame(self.currently_playing_frame, text="Music Details", bg=self.frame_color)
+        self.song_details_frame = tk.Frame(self.currently_playing_frame, bg=self.frame_color)
         self.song_details_frame.grid(column=0, row=0,sticky="ew")
 
-        self.all_btn_frame = tk.LabelFrame(self.currently_playing_frame, text="All BTN frame")
+        self.all_btn_frame = tk.Frame(self.currently_playing_frame, bg= self.frame_color)
         self.all_btn_frame.grid(column=0, row=1)
 
-        self.btn_control_frame = tk.LabelFrame(self.all_btn_frame, text="BTN Control")
+        self.btn_control_frame = tk.Frame(self.all_btn_frame, bg=self.frame_color)
         self.btn_control_frame.grid(column=1, row=1)
 
-        self.add_on_btn_frame = tk.LabelFrame(self.all_btn_frame, text="Add On Frame")
+        self.add_on_btn_frame = tk.LabelFrame(self.all_btn_frame, bg=self.frame_color)
         self.add_on_btn_frame.grid(column=0, row=2, columnspan=3)
         ###################################
 
@@ -116,46 +117,46 @@ class Prototype(tk.Tk):
         ###########################
 
         ##### Album Song Frame #####
-        self.album_frame = tk.LabelFrame(self.main_frame, text="Album Frame", bg=self.frame_color)
+        self.album_frame = tk.Frame(self.main_frame,  bg=self.frame_color)
         self.album_frame.grid(column=0, row=1, sticky="ns")
 
-        self.album_song_frame = tk.LabelFrame(self.main_frame, text="Albumsongs", bg=self.frame_color)
+        self.album_song_frame = tk. Frame(self.main_frame,  bg=self.frame_color)
         self.album_song_frame.grid(column=0, row=1, sticky="ns")
         ############################
 
         ##### Genre Frame #####
-        self.genre_frame = tk.LabelFrame(self.main_frame,text="Genre Frame",bg=self.frame_color)
+        self.genre_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.genre_frame.grid(column=0, row=1, sticky="ns")
 
-        self.genre_song_frame = tk.LabelFrame(self.main_frame,text="Genre Song", bg=self.frame_color)
+        self.genre_song_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.genre_song_frame.grid(column=0, row=1, sticky="ns")
         #######################
 
         ##### Playlist Frame #####
-        self.create_add_playlist_frame = tk.LabelFrame(self.main_frame, text="Playlist", bg=self.frame_color)
+        self.create_add_playlist_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.create_add_playlist_frame.grid(column=0, row=1, sticky="nsew")
 
-        self.playlist_frame = tk.LabelFrame(self.main_frame, text="Playlist Frame", bg=self.frame_color)
+        self.playlist_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.playlist_frame.grid(column=0, row=1, sticky="ns")
 
-        self.playlist_song_frame = tk.LabelFrame(self.main_frame, text="Playlist Song Frame", bg=self.frame_color)
+        self.playlist_song_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.playlist_song_frame.grid(column=0, row=1, sticky="ns")
 
-        self.create_playlist_frame = tk.LabelFrame(self.create_add_playlist_frame, text="Create laylist", bg= self.frame_color)
+        self.create_playlist_frame = tk.Frame(self.create_add_playlist_frame, bg= self.frame_color)
         self.create_playlist_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.add_playlist_frame = tk.LabelFrame(self.create_add_playlist_frame, text="Add Playlist", bg=self.frame_color)
+        self.add_playlist_frame = tk.Frame(self.create_add_playlist_frame, bg=self.frame_color)
         self.add_playlist_frame.pack(fill=tk.BOTH, expand=True )
         ##########################
 
         ##### Mood Frame #####
-        self.mood_frame = tk.LabelFrame(self.main_frame, text="Mood Frame", bg= self.frame_color)
+        self.mood_frame = tk.Frame(self.main_frame, bg= self.frame_color)
         self.mood_frame.grid(column=0, row=1, sticky="nsew")
 
-        self.mood_btn_frame = tk.LabelFrame(self.mood_frame, text="Mood Btn Frame", bg=self.frame_color)
+        self.mood_btn_frame = tk.Frame(self.mood_frame, bg=self.frame_color)
         self.mood_btn_frame.pack(fill="both", expand=True)
 
-        self.mood_songs_frame = tk.LabelFrame(self.main_frame, text="Mood Songs", bg=self.frame_color)
+        self.mood_songs_frame = tk.Frame(self.main_frame, bg=self.frame_color)
         self.mood_songs_frame.grid(column=0, row=1, sticky="ns")
         ######################
 
@@ -281,12 +282,16 @@ class Prototype(tk.Tk):
 
         travel_btn = tk.Button(self.mood_btn_frame, text="Travel", command=self.make_mood_travel)
         travel_btn.pack()
+
+        backbtn10 = tk.Button(self.mood_btn_frame, text="Back", command=lambda:Hide_Frame(self.mood_frame).execute(),
+                            width=14, height=2)
+        backbtn10.pack(side=tk.BOTTOM)
         ####################################
 
         ##### Mood Songs Frame #####
-        backbtn10 = tk.Button(self.mood_songs_frame, text="Back", command=lambda:Hide_Frame(self.mood_songs_frame).execute(),
+        backbtn11 = tk.Button(self.mood_songs_frame, text="Back", command=lambda:Hide_Frame(self.mood_songs_frame).execute(),
                             width=14, height=2)
-        backbtn10.pack(side=tk.BOTTOM)
+        backbtn11.pack(side=tk.BOTTOM)
         ############################
         
     def __add_labels(self):
@@ -296,16 +301,16 @@ class Prototype(tk.Tk):
         music_cover = tk.Label(self.song_details_frame, image=self.music_cover_img, bg=self.frame_color)
         music_cover.pack()
 
-        music_title = tk.Label(self.song_details_frame, textvariable=self.music_title)
+        music_title = tk.Label(self.song_details_frame, textvariable=self.music_title, bg=self.frame_color)
         music_title.pack(anchor="w")
 
-        music_album = tk.Label(self.song_details_frame, textvariable=self.music_album)
+        music_album = tk.Label(self.song_details_frame, textvariable=self.music_album, bg=self.frame_color)
         music_album.pack(anchor="w")
 
-        music_start = tk.Label(self.all_btn_frame, textvariable=self.music_start_length)
+        music_start = tk.Label(self.all_btn_frame, textvariable=self.music_start_length, bg=self.frame_color)
         music_start.grid(column=0, row=1)
 
-        music_legth = tk.Label(self.all_btn_frame, textvariable=self.music_length)
+        music_legth = tk.Label(self.all_btn_frame, textvariable=self.music_length, bg=self.frame_color)
         music_legth.grid(column=2, row=1)
 
     def __add_pictures(self):
@@ -708,8 +713,7 @@ class Prototype(tk.Tk):
                     for song in songs:
                         self.playlist_song_listbox.insert(tk.END, song)
                     break
-
-            
+        
     def load_frequently_played(self):
         selected_index = self.frequently_played_listbox.curselection()
         
