@@ -292,17 +292,17 @@ class Prototype(tk.Tk):
         music_cover = tk.Label(self.song_details_frame, image=self.music_cover_img, bg=self.mellifluous_bg)
         music_cover.pack()
 
-        music_title = tk.Label(self.song_details_frame, textvariable=self.music_title, bg=self.mellifluous_bg)
-        music_title.pack(anchor="w")
+        self.music_title_lbl = tk.Label(self.song_details_frame, textvariable=self.music_title, bg=self.mellifluous_bg)
+        self.music_title_lbl.pack(anchor="w")
 
-        music_album = tk.Label(self.song_details_frame, textvariable=self.music_album, bg=self.mellifluous_bg)
-        music_album.pack(anchor="w")
+        self.music_album_lbl= tk.Label(self.song_details_frame, textvariable=self.music_album, bg=self.mellifluous_bg)
+        self.music_album_lbl.pack(anchor="w")
 
-        music_start = tk.Label(self.all_btn_frame, textvariable=self.music_start_length, bg=self.mellifluous_bg)
-        music_start.grid(column=0, row=1)
+        self.music_start_lbl = tk.Label(self.all_btn_frame, textvariable=self.music_start_length, bg=self.mellifluous_bg)
+        self.music_start_lbl.grid(column=0, row=1)
 
-        music_legth = tk.Label(self.all_btn_frame, textvariable=self.music_length, bg=self.mellifluous_bg)
-        music_legth.grid(column=2, row=1)
+        self.music_length_lbl = tk.Label(self.all_btn_frame, textvariable=self.music_length, bg=self.mellifluous_bg)
+        self.music_length_lbl.grid(column=2, row=1)
 
         self.create_pl_label = tk.Label(self.create_playlist_frame, text = "CREATE PLAYLIST", font=("Arial", 10, "bold"), bg = self.mellifluous_bg)
         self.create_pl_label.pack(pady = 0)
@@ -474,10 +474,10 @@ class Prototype(tk.Tk):
 
         self.mood_song_listbox.config(bg = self.mellifluous_bg)
 
-        # self.music_title.config(bg = self.mellifluous_bg)
-        # self.music_album.config(bg = self.mellifluous_bg)
-        # self.music_start_length.config(bg = self.mellifluous_bg)
-        # self.music_length.config(bg = self.mellifluous_bg)
+        self.music_title_lbl.config(bg = self.mellifluous_bg)
+        self.music_album_lbl.config(bg = self.mellifluous_bg)
+        self.music_start_lbl.config(bg = self.mellifluous_bg)
+        self.music_length_lbl.config(bg = self.mellifluous_bg)
 
     def config_into_happy_aesthetics(self):
         happy_bg = "#FFAF4D"
@@ -505,10 +505,10 @@ class Prototype(tk.Tk):
 
         self.mood_song_listbox.config(bg = happy_bg)
 
-        # self.music_title(bg = happy_bg)
-        # self.music_album.config(bg = happy_bg)
-        # self.music_start_length.config(bg = happy_bg)
-        # self.music_length.config(bg = happy_bg)
+        self.music_title_lbl.config(bg = happy_bg)
+        self.music_album_lbl.config(bg = happy_bg)
+        self.music_start_lbl.config(bg = happy_bg)
+        self.music_length_lbl.config(bg = happy_bg)
 
     def config_into_sad_aesthetics(self):
         sad_bg = "#FFE0EE"
@@ -536,6 +536,11 @@ class Prototype(tk.Tk):
 
         self.mood_song_listbox.config(bg = sad_bg)
 
+        self.music_title_lbl.config(bg = sad_bg)
+        self.music_album_lbl.config(bg = sad_bg)
+        self.music_start_lbl.config(bg = sad_bg)
+        self.music_length_lbl.config(bg =sad_bg)
+
     def config_into_chill_aesthetics(self):
         chill_bg = "#DBE1A6"
 
@@ -561,6 +566,11 @@ class Prototype(tk.Tk):
         self.mood_songs_frame.config(bg = chill_bg)
 
         self.mood_song_listbox.config(bg = chill_bg)
+
+        self.music_title_lbl.config(bg = chill_bg)
+        self.music_album_lbl.config(bg = chill_bg)
+        self.music_start_lbl.config(bg = chill_bg)
+        self.music_length_lbl.config(bg =chill_bg)
 
     def config_into_sexy_aesthetics(self):
         sexy_bg = "#E10C22"
@@ -588,6 +598,11 @@ class Prototype(tk.Tk):
 
         self.mood_song_listbox.config(bg = sexy_bg)
 
+        self.music_title_lbl.config(bg = sexy_bg)
+        self.music_album_lbl.config(bg = sexy_bg)
+        self.music_start_lbl.config(bg = sexy_bg)
+        self.music_length_lbl.config(bg =sexy_bg)
+
     def config_into_travel_aesthetics(self):
         travel_bg = "#6495FC"
 
@@ -611,6 +626,11 @@ class Prototype(tk.Tk):
         self.mood_songs_frame.config(bg = travel_bg)
 
         self.mood_song_listbox.config(bg = travel_bg)
+
+        self.music_title_lbl.config(bg = travel_bg)
+        self.music_album_lbl.config(bg = travel_bg)
+        self.music_start_lbl.config(bg = travel_bg)
+        self.music_length_lbl.config(bg = travel_bg)
 
     def load_songs(self):
         if os.path.exists("music_data.json"):
