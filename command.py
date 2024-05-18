@@ -335,6 +335,7 @@ class Make_Mood(Command):
         self.__mood = mood
         self.__genres = genres
         self.__mood_songs = []
+        self.genres_file = Load_JSON("genre.json").execute()
 
     def execute(self):
         for genre_title, genre_songs in self.genres_file.items():

@@ -3,7 +3,6 @@ from command import *
 import tkinter as tk
 import os
 import pygame
-import random
 
 class Prototype(tk.Tk):
     def __init__(self) -> None:
@@ -16,13 +15,15 @@ class Prototype(tk.Tk):
         # Color varibles
         self.bg_color = "#660000"
         self.frame_color = "#6fa8dc"
+        self.mellifluous_bg = "#45D3A0"
+
         self.playlists = Load_JSON("playlist.json").execute()
 
         self.music_title = tk.StringVar(value="Music Title")
         self.music_album = tk.StringVar(value="Music Album")
         self.music_start_length = tk.StringVar(value="00:00")
         self.music_length = tk.StringVar(value="00:00")
-        self.option_var = tk.StringVar(value="Songs")
+        self.option_var = tk.StringVar()
 
         self.play_text = tk.StringVar(value="\u23F5")
 
@@ -32,11 +33,11 @@ class Prototype(tk.Tk):
         self.music_start_counter = 0
         self.selected_index = 0
 
-        self.__configure_window()
         self.__add_pictures()
+        self.__configure_window()
         self.__add_frames()
-        self.__add_entry()
         self.__add_labels()
+        self.__add_entry()
         self.__add_dropdown()
         self.__add_scrollbar()
         self.__add_listbox()
@@ -50,17 +51,8 @@ class Prototype(tk.Tk):
         self.bind("<Right>", self.play_next)
         self.bind("<Left>", self.play_prev)
 
-        # Here dito is padding sya kung baga is yung layo ng widgets sa isat isa
-        Config_WidgetPadding(self.root_frame, 10, 10).execute()
-        Config_WidgetPadding(self.main_frame, 10, None).execute()
-        Config_WidgetPadding(self.currently_playing_frame, 20, 10).execute()
-        Config_WidgetPadding(self.main_menu_frame, 20, 10).execute()
-        Config_WidgetPadding(self.main_menu_btn_frame, 20, 15).execute()
-        Config_WidgetPadding(self.all_btn_frame, 10, 10).execute()
-
-        # Font Size
-        Config_WidgetFontSize(self.main_menu_btn_frame, "Arial", 15).execute()
-        Config_WidgetFontSize(self.btn_control_frame, "Arial", 15).execute()
+        Config_WidgetPadding(self.main_menu_btn_frame, 5, 5).execute()
+        Config_WidgetPadding(self.mood_btn_frame, 5, 5).execute()
 
         self.main_menu_frame.tkraise()
 
@@ -68,98 +60,101 @@ class Prototype(tk.Tk):
 
     def __configure_window(self):
         self.title("Mellifluous")
+        self.geometry("700x500")
         self.resizable(False, False)
-        self.configure(bg="#660000")
+        self.configure(bg = self.mellifluous_bg)
 
     def __add_frames(self):
         # Root Frame
-        self.root_frame = tk.Frame(self, bg=self.bg_color)
-        self.root_frame.pack(expand=True)
+        self.root_frame = tk.Frame(self, bg = self.mellifluous_bg, width = 700, height = 500)
+        self.root_frame.place(x = 0, y = 0)
 
         # Main Frame
-        self.main_frame = tk.Frame(self.root_frame, bg=self.bg_color)
-        self.main_frame.pack(expand=True)
+        self.main_frame = tk.Frame(self.root_frame, bg = self.bg_color, width = 700, height = 500)
+        self.main_frame.place(x = 0, y = 0)
+        self.mellifluous_img = tk.Label(self.main_frame, image = self.main_bg_img)
+        self.mellifluous_img.place(x = -2, y = 0)
 
         ##### Main Menu Frame #####
-        self.main_menu_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.main_menu_frame.grid(column=0, row=1, sticky="ns")
+        self.main_menu_frame = tk.Frame(self.main_frame, bg= self.mellifluous_bg, width = 340, height = 408)
+        self.main_menu_frame.place(x = 55, y = 55)
 
-        self.main_menu_btn_frame = tk.Frame(self.main_menu_frame, bg=self.frame_color)
-        self.main_menu_btn_frame.grid(column=0, row=0)
+        self.main_menu_btn_frame = tk.Frame(self.main_menu_frame, bg= self.mellifluous_bg, width = 340, height = 175)
+        self.main_menu_btn_frame.place(x=0, y=0)
 
-        self.frequently_played_frame = tk.Frame(self.main_menu_frame, bg=self.frame_color)
-        self.frequently_played_frame.grid(column=0, row=1)
+        self.frequently_played_frame = tk.Frame(self.main_menu_frame, bg = self.mellifluous_bg, width = 340, height = 200)
+        self.frequently_played_frame.place(x = 0, y = 230)
         ###########################
 
         ##### Currently Playing Frame #####
-        self.currently_playing_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.currently_playing_frame.grid(column=1, row=1, sticky="ns")
+        self.currently_playing_frame = tk.Frame(self.main_frame, width = 220, height = 405, bg= self.mellifluous_bg)
+        self.currently_playing_frame.place(x = 440, y = 55)
 
-        self.song_details_frame = tk.Frame(self.currently_playing_frame, bg=self.frame_color)
-        self.song_details_frame.grid(column=0, row=0,sticky="ew")
+        self.song_details_frame = tk.Frame(self.currently_playing_frame, width = 200, height = 220, bg= self.mellifluous_bg)
+        self.song_details_frame.place(x = 10, y = 10)
 
-        self.all_btn_frame = tk.Frame(self.currently_playing_frame, bg= self.frame_color)
-        self.all_btn_frame.grid(column=0, row=1)
+        self.all_btn_frame = tk.Frame(self.currently_playing_frame, width = 200, height = 135, bg = self.mellifluous_bg)
+        self.all_btn_frame.place(x = 25, y = 280)
 
-        self.btn_control_frame = tk.Frame(self.all_btn_frame, bg=self.frame_color)
+        self.btn_control_frame = tk.LabelFrame(self.all_btn_frame, width = 120, height = 30, bg =  self.mellifluous_bg)
         self.btn_control_frame.grid(column=1, row=1)
 
-        self.add_on_btn_frame = tk.LabelFrame(self.all_btn_frame, bg=self.frame_color)
+        self.add_on_btn_frame = tk.LabelFrame(self.all_btn_frame, bg=self.frame_color, width = 100, height = 65)
         self.add_on_btn_frame.grid(column=0, row=2, columnspan=3)
         ###################################
 
         ##### All Songs Frame #####
-        self.all_songs_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.all_songs_frame.grid(column=0, row=1, sticky="ns")
+        self.all_songs_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.all_songs_frame.place(x = 55, y = 55)
         ###########################
 
         ##### Favorites Frame #####
-        self.fav_songs_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.fav_songs_frame.grid(column=0, row=1, sticky="ns")
+        self.fav_songs_frame = tk.Frame(self.main_frame,  width = 340, height = 405, bg = self.mellifluous_bg)
+        self.fav_songs_frame.place(x = 55, y = 55)
         ###########################
 
         ##### Album Song Frame #####
-        self.album_frame = tk.Frame(self.main_frame,  bg=self.frame_color)
-        self.album_frame.grid(column=0, row=1, sticky="ns")
+        self.album_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.album_frame.place(x = 55, y = 55)
 
-        self.album_song_frame = tk. Frame(self.main_frame,  bg=self.frame_color)
-        self.album_song_frame.grid(column=0, row=1, sticky="ns")
+        self.album_song_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.album_song_frame.place(x = 55, y = 55)
         ############################
 
         ##### Genre Frame #####
-        self.genre_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.genre_frame.grid(column=0, row=1, sticky="ns")
+        self.genre_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.genre_frame.place(x = 55, y = 55)
 
-        self.genre_song_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.genre_song_frame.grid(column=0, row=1, sticky="ns")
+        self.genre_song_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.genre_song_frame.place(x = 55, y = 55)
         #######################
 
         ##### Playlist Frame #####
-        self.create_add_playlist_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.create_add_playlist_frame.grid(column=0, row=1, sticky="nsew")
+        self.playlist_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.playlist_frame.place(x = 55, y = 55)
 
-        self.playlist_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.playlist_frame.grid(column=0, row=1, sticky="ns")
+        self.create_add_playlist_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.create_add_playlist_frame.place(x = 55, y = 55)
 
-        self.playlist_song_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.playlist_song_frame.grid(column=0, row=1, sticky="ns")
+        self.playlist_song_frame = tk.LabelFrame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.playlist_song_frame.place(x = 55, y = 55)
 
-        self.create_playlist_frame = tk.Frame(self.create_add_playlist_frame, bg= self.frame_color)
-        self.create_playlist_frame.pack(fill=tk.BOTH, expand=True)
+        self.create_playlist_frame = tk.Frame(self.create_add_playlist_frame, width = 340, height = 200, bg = self.mellifluous_bg)
+        self.create_playlist_frame.place(x = 0, y = 0)
 
-        self.add_playlist_frame = tk.Frame(self.create_add_playlist_frame, bg=self.frame_color)
-        self.add_playlist_frame.pack(fill=tk.BOTH, expand=True )
+        self.add_playlist_frame = tk.Frame(self.create_add_playlist_frame, width = 340, height = 200, bg = self.mellifluous_bg)
+        self.add_playlist_frame.place(x = 0, y = 205)
         ##########################
 
         ##### Mood Frame #####
-        self.mood_frame = tk.Frame(self.main_frame, bg= self.frame_color)
-        self.mood_frame.grid(column=0, row=1, sticky="nsew")
+        self.mood_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.mood_frame.place(x = 55, y = 55)
 
-        self.mood_btn_frame = tk.Frame(self.mood_frame, bg=self.frame_color)
-        self.mood_btn_frame.pack(fill="both", expand=True)
+        self.mood_btn_frame = tk.Frame(self.mood_frame, bg = self.mellifluous_bg, width = 340, height = 405)
+        self.mood_btn_frame.place(x = 0, y = 0)
 
-        self.mood_songs_frame = tk.Frame(self.main_frame, bg=self.frame_color)
-        self.mood_songs_frame.grid(column=0, row=1, sticky="ns")
+        self.mood_songs_frame = tk.Frame(self.main_frame, width = 340, height = 405, bg = self.mellifluous_bg)
+        self.mood_songs_frame.place(x = 55, y = 55)
         ######################
 
     def __add_buttons(self):
@@ -211,113 +206,117 @@ class Prototype(tk.Tk):
         ###########################
 
         ##### Fave Songs Frame #####
-        backbtn2 = tk.Button(self.fav_songs_frame, text="Back", command=lambda:Hide_Frame(self.fav_songs_frame).execute(),
-                            width=14, height=2)
+        backbtn2 = tk.Button(self.fav_songs_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.fav_songs_frame).execute())
         backbtn2.pack(side=tk.BOTTOM)
         ############################
 
         ##### Album Frame #####
-        backbtn3 = tk.Button(self.album_frame, text="Back", command=lambda:Hide_Frame(self.album_frame).execute(),
-                            width=14, height=2)
+        backbtn3 = tk.Button(self.album_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.album_frame).execute())
         backbtn3.pack(side=tk.BOTTOM)
-        openbtn3 = tk.Button(self.album_frame, text="Open", command=self.check_selected,
-                            width=14, height=2)
+        openbtn3 = tk.Button(self.album_frame, image= self.open_btn_img, command=self.check_selected)
         openbtn3.pack(side=tk.BOTTOM)
         #######################
 
         ###### Album Song Frame #####
-        backbtn4 = tk.Button(self.album_song_frame, text="Back", command=lambda:Hide_Frame(self.album_song_frame).execute(),
-                            width=14, height=2)
+        backbtn4 = tk.Button(self.album_song_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.album_song_frame).execute())
         backbtn4.pack(side=tk.BOTTOM)
         #############################
 
         ##### Genre Frame #####
-        backbtn5 = tk.Button(self.genre_frame, text="Back", command=lambda:Hide_Frame(self.genre_frame).execute(),
-                            width=14, height=2)
+        backbtn5 = tk.Button(self.genre_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.genre_frame).execute())
         backbtn5.pack(side=tk.BOTTOM)
-        openbtn5 = tk.Button(self.genre_frame, text="Open", command=self.check_selected,
-                            width=14, height=2)
+        openbtn5 = tk.Button(self.genre_frame, image= self.open_btn_img, command=self.check_selected)
         openbtn5.pack(side=tk.BOTTOM)
         #######################
 
         ##### Genre song Frame #####
-        backbtn6 = tk.Button(self.genre_song_frame, text="Back", command=lambda:Hide_Frame(self.genre_song_frame).execute(),
-                            width=14, height=2)
+        backbtn6 = tk.Button(self.genre_song_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.genre_song_frame).execute())
         backbtn6.pack(side=tk.BOTTOM)
         ############################
 
         ##### Playlist Frame #####
-        backbtn7 = tk.Button(self.playlist_frame, text="Back", command=lambda:Hide_Frame(self.playlist_frame).execute(),
-                            width=14, height=2)
+        backbtn7 = tk.Button(self.playlist_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.playlist_frame).execute())
         backbtn7.pack(side=tk.BOTTOM)
-        openbtn7 = tk.Button(self.playlist_frame, text="Open", command=self.check_selected,
-                            width=14, height=2)
+
+        openbtn7 = tk.Button(self.playlist_frame, image= self.open_btn_img, command=self.check_selected)
         openbtn7.pack(side=tk.BOTTOM)
 
-        self.create_playlist_btn = tk.Button(self.create_playlist_frame, text="Create Playlist", command=self.create_playlist)
+        self.create_playlist_btn = tk.Button(self.create_playlist_frame, text="Create Playlist", command=self.create_playlist, width = 48, height = 3)
         self.create_playlist_btn.pack(fill=tk.BOTH, expand=True)
 
-        self.add_playlist_btn = tk.Button(self.add_playlist_frame, text="Add to Playlist", command=self.add_playlist)
+        self.add_playlist_btn = tk.Button(self.add_playlist_frame, text="Add to Playlist", command=self.add_playlist, width = 48, height = 3)
         self.add_playlist_btn.pack(fill=tk.BOTH, expand=True)
 
-        backbtn8 = tk.Button(self.create_add_playlist_frame, text="Back", command=lambda:Hide_Frame(self.create_add_playlist_frame).execute(),
-                            width=14, height=2)
-        backbtn8.pack(side=tk.BOTTOM)
+        backbtn8 = tk.Button(self.create_add_playlist_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.create_add_playlist_frame).execute())
+        backbtn8.place(x = 0, y= 355)
 
-        backbtn9 = tk.Button(self.playlist_song_frame, text="Back", command=lambda:Hide_Frame(self.playlist_song_frame).execute(),
-                            width=14, height=2)
+        backbtn9 = tk.Button(self.playlist_song_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.playlist_song_frame).execute())
         backbtn9.pack(side=tk.BOTTOM)
         ##########################
 
         ########## Mood BTN ################
-        happy_btn = tk.Button(self.mood_btn_frame, text="Happy", command=self.make_mood_happy)
-        happy_btn.pack()
+        happy_btn = tk.Button(self.mood_btn_frame, text="Happy", image = self.happy_bttn_img,
+                            command = lambda : [self.config_into_happy_aesthetics(), self.make_mood_happy()])
+        happy_btn.grid(column=0, row=0, sticky="ew")
 
-        sad_btn = tk.Button(self.mood_btn_frame, text="Sad", command= self.make_mood_sad)
-        sad_btn.pack()
+        sad_btn = tk.Button(self.mood_btn_frame, text="Sad", image = self.sad_bttn_img,
+                            command = lambda : [self.config_into_sad_aesthetics(), self.make_mood_sad()])
+        sad_btn.grid(column=1, row=0, sticky="ew")
 
-        chill_btn = tk.Button(self.mood_btn_frame, text="Chill", command=self.make_mood_chill)
-        chill_btn.pack()
+        chill_btn = tk.Button(self.mood_btn_frame, text="Chill", image = self.chill_bttn_img,
+                            command = lambda : [self.config_into_chill_aesthetics(), self.make_mood_chill()])
+        chill_btn.grid(column=0, row=1, sticky="ew")
 
-        sexy_btn = tk.Button(self.mood_btn_frame, text="Sexy", command=self.make_mood_sexy)
-        sexy_btn.pack()
+        sexy_btn = tk.Button(self.mood_btn_frame, text="Sexy", image = self.sexy_bttn_img,
+                            command = lambda : [self.config_into_sexy_aesthetics() ,self.make_mood_sexy()])
+        sexy_btn.grid(column=1, row=1, sticky="ew")
 
-        travel_btn = tk.Button(self.mood_btn_frame, text="Travel", command=self.make_mood_travel)
-        travel_btn.pack()
+        travel_btn = tk.Button(self.mood_btn_frame, text="Travel", image = self.travel_bttn_img,
+                            command = lambda : [self.config_into_travel_aesthetics(), self.make_mood_travel()])
+        travel_btn.grid(column=0, row=2, sticky="ew")
 
-        backbtn10 = tk.Button(self.mood_btn_frame, text="Back", command=lambda:Hide_Frame(self.mood_frame).execute(),
-                            width=14, height=2)
-        backbtn10.pack(side=tk.BOTTOM)
-        ####################################
+        backbtn10 = tk.Button(self.mood_btn_frame, image= self.back_btn_img,
+                            command = lambda: [self.config_into_default(), Hide_Frame(self.mood_frame).execute()])
+        backbtn10.grid(column = 0, row = 3, sticky = "s")
+        #################################### 
 
         ##### Mood Songs Frame #####
-        backbtn11 = tk.Button(self.mood_songs_frame, text="Back", command=lambda:Hide_Frame(self.mood_songs_frame).execute(),
-                            width=14, height=2)
+        backbtn11 = tk.Button(self.mood_songs_frame, image= self.back_btn_img, command=lambda:Hide_Frame(self.mood_songs_frame).execute())
         backbtn11.pack(side=tk.BOTTOM)
         ############################
         
     def __add_labels(self):
-        brand = tk.Label(self.main_frame, text="MELLIFLUOUS", font=("Arial", 15, "bold"), bg=self.bg_color, fg="white")
-        brand.grid(column=0, row=0, sticky="w")
+        # brand = tk.Label(self.main_frame, text="MELLIFLUOUS", font=("Arial", 15, "bold"), bg=self.bg_color, fg=self.mellifluous_bg)
+        # brand.grid(column=0, row=0, sticky="w")
 
-        music_cover = tk.Label(self.song_details_frame, image=self.music_cover_img, bg=self.frame_color)
+        music_cover = tk.Label(self.song_details_frame, image=self.music_cover_img, bg=self.mellifluous_bg)
         music_cover.pack()
 
-        music_title = tk.Label(self.song_details_frame, textvariable=self.music_title, bg=self.frame_color)
+        music_title = tk.Label(self.song_details_frame, textvariable=self.music_title, bg=self.mellifluous_bg)
         music_title.pack(anchor="w")
 
-        music_album = tk.Label(self.song_details_frame, textvariable=self.music_album, bg=self.frame_color)
+        music_album = tk.Label(self.song_details_frame, textvariable=self.music_album, bg=self.mellifluous_bg)
         music_album.pack(anchor="w")
 
-        music_start = tk.Label(self.all_btn_frame, textvariable=self.music_start_length, bg=self.frame_color)
+        music_start = tk.Label(self.all_btn_frame, textvariable=self.music_start_length, bg=self.mellifluous_bg)
         music_start.grid(column=0, row=1)
 
-        music_legth = tk.Label(self.all_btn_frame, textvariable=self.music_length, bg=self.frame_color)
+        music_legth = tk.Label(self.all_btn_frame, textvariable=self.music_length, bg=self.mellifluous_bg)
         music_legth.grid(column=2, row=1)
+
+        self.create_pl_label = tk.Label(self.create_playlist_frame, text = "CREATE PLAYLIST", font=("Arial", 10, "bold"), bg = self.mellifluous_bg)
+        self.create_pl_label.pack(pady = 0)
+
+        self.add_pl_label = tk.Label(self.add_playlist_frame, text = "ADD TO PLAYLIST", font=("Arial", 10, "bold"), bg = self.mellifluous_bg)
+        self.add_pl_label.pack(pady = 0)
 
     def __add_pictures(self):
         # Assets
-        music_cover_path = os.path.join("assets", "albumart.png")
+        # Load Assets Path
+        music_cover_path = os.path.join("assets", "mellifluous_logo.png")
+        main_bg_path = os.path.join("assets", "mellifluous_interface_bg.png")
+
+        ## Main Menu buttons
         albums_path = os.path.join("assets", "albums.png")
         all_songs_path = os.path.join("assets", "all_songs.png")
         favorites_path = os.path.join("assets", "favorites.png")
@@ -325,10 +324,28 @@ class Prototype(tk.Tk):
         mood_path = os.path.join("assets", "mood.png")
         playlist_path = os.path.join("assets", "playlists.png")
         back_btn_path = os.path.join("assets", "back.png")
+        open_btn_path = os.path.join("assets", "open.png")
         add_fav_path = os.path.join("assets", "add_to_favorites.png")
         add_playlist_path = os.path.join("assets", "add_to_playlist.png")
 
+        ## Mood buttons
+        happy_bttn_path = os.path.join("assets", "happy_bttn.png")
+        sad_bttn_path= os.path.join("assets", "sad_bttn.png")
+        chill_bttn_path = os.path.join("assets", "chill_bttn.png")
+        sexy_bttn_path = os.path.join("assets", "sexy_bttn.png")
+        travel_bttn_path = os.path.join("assets", "travel_bttn.png")
+
+        ## Aesthetics
+        happy_path = os.path.join("assets", "happy.png")
+        sad_path = os.path.join("assets", "sad.png")
+        chill_path = os.path.join("assets", "chill.png")
+        sexy_path = os.path.join("assets", "sexy.png")
+        travel_path = os.path.join("assets", "travel.png")
+
+        # Load Assets Images
         self.music_cover_img = tk.PhotoImage(file=music_cover_path)
+        self.main_bg_img = tk.PhotoImage(file=main_bg_path)
+
         self.albums_img = tk.PhotoImage(file=albums_path)
         self.all_songs_img = tk.PhotoImage(file=all_songs_path)
         self.favorites_img = tk.PhotoImage(file=favorites_path)
@@ -336,19 +353,21 @@ class Prototype(tk.Tk):
         self.mood_img = tk.PhotoImage(file=mood_path)
         self.playlist_img = tk.PhotoImage(file=playlist_path)
         self.back_btn_img = tk.PhotoImage(file=back_btn_path)
+        self.open_btn_img = tk.PhotoImage(file=open_btn_path)
         self.add_fav_img = tk.PhotoImage(file=add_fav_path)
         self.add_playlist_img = tk.PhotoImage(file=add_playlist_path)
 
-        # Media Controls
-        play_path = os.path.join("assets", "play.png")
-        pause_path = os.path.join("assets", "pause.png")
-        next_path = os.path.join("assets", "next.png")
-        prev_path = os.path.join("assets", "prev.png")
+        self.happy_bttn_img = tk.PhotoImage(file = happy_bttn_path)
+        self.sad_bttn_img = tk.PhotoImage(file = sad_bttn_path)
+        self.chill_bttn_img = tk.PhotoImage(file = chill_bttn_path)
+        self.sexy_bttn_img = tk.PhotoImage(file = sexy_bttn_path)
+        self.travel_bttn_img = tk.PhotoImage(file = travel_bttn_path)
 
-        self.play_img = tk.PhotoImage(file=play_path)
-        self.pause_img = tk.PhotoImage(file=pause_path)
-        self.next_img = tk.PhotoImage(file=next_path)
-        self.preve_img = tk.PhotoImage(file=prev_path)
+        self.happy_img = tk.PhotoImage(file = happy_path)
+        self.sad_img = tk.PhotoImage(file = sad_path)
+        self.chill_img = tk.PhotoImage(file = chill_path)
+        self.sexy_img = tk.PhotoImage(file = sexy_path)
+        self.travel_img = tk.PhotoImage(file = travel_path)
 
     def __add_dropdown(self):
         options = ["Songs", "Playlists"]
@@ -356,43 +375,43 @@ class Prototype(tk.Tk):
         dropdown.pack(anchor="e")
 
     def __add_listbox(self):
-        self.all_songs_listbox = tk.Listbox(self.all_songs_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.all_songs_listbox = tk.Listbox(self.all_songs_frame, width=35, height=18, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.all_songs_listbox.pack(fill="both")
 
-        self.fav_song_listbox = tk.Listbox(self.fav_songs_frame, width=46, height=20, font=("Arial", 12, "bold"),
+        self.fav_song_listbox = tk.Listbox(self.fav_songs_frame, width=35, height=18, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y1.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.fav_song_listbox.pack(fill="both")
 
-        self.album_listbox = tk.Listbox(self.album_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.album_listbox = tk.Listbox(self.album_frame, width=35, height=16, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y2.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.album_listbox.pack(fill="both")
 
-        self.album_song_listbox = tk.Listbox(self.album_song_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.album_song_listbox = tk.Listbox(self.album_song_frame, width=35, height=18, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y3.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.album_song_listbox.pack(fill="both")
 
-        self.genre_listbox = tk.Listbox(self.genre_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.genre_listbox = tk.Listbox(self.genre_frame, width=35, height=16, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y4.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.genre_listbox.pack(fill="both")
 
-        self.genre_song_listbox = tk.Listbox(self.genre_song_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.genre_song_listbox = tk.Listbox(self.genre_song_frame, width=35, height=18, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y5.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.genre_song_listbox.pack(fill="both")
 
-        self.frequently_played_listbox = tk.Listbox(self.frequently_played_frame,width=43, height=6, font=("Arial", 12, "bold"),
+        self.frequently_played_listbox = tk.Listbox(self.frequently_played_frame, bg = self.mellifluous_bg, width = 37, height = 6, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y5.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.frequently_played_listbox.pack(fill="both")
 
-        self.playlist_listbox = tk.Listbox(self.playlist_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.playlist_listbox = tk.Listbox(self.playlist_frame, width=35, height=16, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y6.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.playlist_listbox.pack(fill="both")
 
-        self.playlist_song_listbox = tk.Listbox(self.playlist_song_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.playlist_song_listbox = tk.Listbox(self.playlist_song_frame, width=35, height=18, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y7.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.playlist_song_listbox.pack(fill="both")
 
-        self.mood_song_listbox = tk.Listbox(self.mood_songs_frame,width=46, height=20, font=("Arial", 12, "bold"),
+        self.mood_song_listbox = tk.Listbox(self.mood_songs_frame, width=35, height=16, font=("Arial", 12, "bold"),
                                             yscrollcommand=self.scroll_y8.set, selectmode=tk.SINGLE, relief=tk.GROOVE)
         self.mood_song_listbox.pack(fill="both")
 
@@ -425,11 +444,173 @@ class Prototype(tk.Tk):
         self.scroll_y8.pack(side=tk.RIGHT, fill=tk.Y)
 
     def __add_entry(self):
-        self.create_playlist_name_entry = tk.Entry(self.create_playlist_frame)
-        self.create_playlist_name_entry.pack(fill=tk.BOTH, expand=True)
+        self.create_playlist_name_entry = tk.Entry(self.create_playlist_frame, font = ("Arial", 20))
+        self.create_playlist_name_entry.pack(fill=tk.BOTH, expand=True, pady = 10)
 
-        self.add_playlist_name_entry = tk.Entry(self.add_playlist_frame)
-        self.add_playlist_name_entry.pack(fill=tk.BOTH, expand=True)
+        self.add_playlist_name_entry = tk.Entry(self.add_playlist_frame, font = ("Arial", 20))
+        self.add_playlist_name_entry.pack(fill=tk.BOTH, expand=True, pady = 10)
+
+    def config_into_default(self):
+        self.mellifluous_img.config(image = self.main_bg_img)
+
+        self.main_menu_frame.config(bg = self.mellifluous_bg)
+
+        self.currently_playing_frame.config(bg = self.mellifluous_bg)
+        self.song_details_frame.config(bg = self.mellifluous_bg)
+        self.all_btn_frame.config(bg = self.mellifluous_bg)
+        self.btn_control_frame.config(bg = self.mellifluous_bg)
+        self.add_on_btn_frame.config(bg = self.mellifluous_bg)
+
+        self.create_add_playlist_frame.config(bg = self.mellifluous_bg)
+        self.create_playlist_frame.config(bg = self.mellifluous_bg)
+        self.add_playlist_frame.config(bg = self.mellifluous_bg)
+
+        self.create_pl_label.config(bg = self.mellifluous_bg)
+        self.add_pl_label.config(bg = self.mellifluous_bg)
+
+        self.mood_frame.config(bg = self.mellifluous_bg)
+        self.mood_btn_frame.config(bg = self.mellifluous_bg)
+        self.mood_songs_frame.config(bg = self.mellifluous_bg)
+
+        self.mood_song_listbox.config(bg = self.mellifluous_bg)
+
+        # self.music_title.config(bg = self.mellifluous_bg)
+        # self.music_album.config(bg = self.mellifluous_bg)
+        # self.music_start_length.config(bg = self.mellifluous_bg)
+        # self.music_length.config(bg = self.mellifluous_bg)
+
+    def config_into_happy_aesthetics(self):
+        happy_bg = "#FFAF4D"
+
+        self.mellifluous_img.config(image = self.happy_img)
+
+        self.main_menu_frame.config(bg = happy_bg)
+
+        self.currently_playing_frame.config(bg = happy_bg)
+        self.song_details_frame.config(bg = happy_bg)
+        self.all_btn_frame.config(bg = happy_bg)
+        self.btn_control_frame.config(bg = happy_bg)
+        self.add_on_btn_frame.config(bg = happy_bg)
+
+        self.create_pl_label.config(bg = happy_bg)
+        self.add_pl_label.config(bg = happy_bg)
+
+        self.create_add_playlist_frame.config(bg = happy_bg)
+        self.create_playlist_frame.config(bg = happy_bg)
+        self.add_playlist_frame.config(bg = happy_bg)
+
+        self.mood_frame.config(bg = happy_bg)
+        self.mood_btn_frame.config(bg = happy_bg)
+        self.mood_songs_frame.config(bg = happy_bg)
+
+        self.mood_song_listbox.config(bg = happy_bg)
+
+        # self.music_title(bg = happy_bg)
+        # self.music_album.config(bg = happy_bg)
+        # self.music_start_length.config(bg = happy_bg)
+        # self.music_length.config(bg = happy_bg)
+
+    def config_into_sad_aesthetics(self):
+        sad_bg = "#FFE0EE"
+
+        self.mellifluous_img.config(image = self.sad_img)
+
+        self.main_menu_frame.config(bg = sad_bg)
+
+        self.currently_playing_frame.config(bg = sad_bg)
+        self.song_details_frame.config(bg = sad_bg)
+        self.all_btn_frame.config(bg = sad_bg)
+        self.btn_control_frame.config(bg = sad_bg)
+        self.add_on_btn_frame.config(bg = sad_bg)
+
+        self.create_add_playlist_frame.config(bg = sad_bg)
+        self.create_playlist_frame.config(bg = sad_bg)
+        self.add_playlist_frame.config(bg = sad_bg)
+
+        self.create_pl_label.config(bg = sad_bg)
+        self.add_pl_label.config(bg = sad_bg)
+
+        self.mood_frame.config(bg = sad_bg)
+        self.mood_btn_frame.config(bg = sad_bg)
+        self.mood_songs_frame.config(bg = sad_bg)
+
+        self.mood_song_listbox.config(bg = sad_bg)
+
+    def config_into_chill_aesthetics(self):
+        chill_bg = "#DBE1A6"
+
+        self.mellifluous_img.config(image = self.chill_img)
+
+        self.main_menu_frame.config(bg = chill_bg)
+
+        self.currently_playing_frame.config(bg = chill_bg)
+        self.song_details_frame.config(bg = chill_bg)
+        self.all_btn_frame.config(bg = chill_bg)
+        self.btn_control_frame.config(bg = chill_bg)
+        self.add_on_btn_frame.config(bg = chill_bg)
+
+        self.create_add_playlist_frame.config(bg = chill_bg)
+        self.create_playlist_frame.config(bg = chill_bg)
+        self.add_playlist_frame.config(bg = chill_bg)
+
+        self.create_pl_label.config(bg = chill_bg)
+        self.add_pl_label.config(bg = chill_bg)
+
+        self.mood_frame.config(bg = chill_bg)
+        self.mood_btn_frame.config(bg = chill_bg)
+        self.mood_songs_frame.config(bg = chill_bg)
+
+        self.mood_song_listbox.config(bg = chill_bg)
+
+    def config_into_sexy_aesthetics(self):
+        sexy_bg = "#E10C22"
+
+        self.mellifluous_img.config(image = self.sexy_img)
+
+        self.main_menu_frame.config(bg = sexy_bg)
+
+        self.currently_playing_frame.config(bg = sexy_bg)
+        self.song_details_frame.config(bg = sexy_bg)
+        self.all_btn_frame.config(bg = sexy_bg)
+        self.btn_control_frame.config(bg = sexy_bg)
+        self.add_on_btn_frame.config(bg = sexy_bg)
+
+        self.create_add_playlist_frame.config(bg = sexy_bg)
+        self.create_playlist_frame.config(bg = sexy_bg)
+        self.add_playlist_frame.config(bg = sexy_bg)
+
+        self.create_pl_label.config(bg = sexy_bg)
+        self.add_pl_label.config(bg = sexy_bg)
+
+        self.mood_frame.config(bg = sexy_bg)
+        self.mood_btn_frame.config(bg = sexy_bg)
+        self.mood_songs_frame.config(bg = sexy_bg)
+
+        self.mood_song_listbox.config(bg = sexy_bg)
+
+    def config_into_travel_aesthetics(self):
+        travel_bg = "#6495FC"
+
+        self.mellifluous_img.config(image = self.travel_img)
+
+        self.currently_playing_frame.config(bg = travel_bg)
+        self.song_details_frame.config(bg = travel_bg)
+        self.all_btn_frame.config(bg = travel_bg)
+        self.btn_control_frame.config(bg = travel_bg)
+        self.add_on_btn_frame.config(bg = travel_bg)
+
+        self.create_add_playlist_frame.config(bg = travel_bg)
+        self.create_playlist_frame.config(bg = travel_bg)
+        self.add_playlist_frame.config(bg = travel_bg)
+
+        self.create_pl_label.config(bg = travel_bg)
+        self.add_pl_label.config(bg = travel_bg)
+
+        self.mood_frame.config(bg = travel_bg)
+        self.mood_btn_frame.config(bg = travel_bg)
+        self.mood_songs_frame.config(bg = travel_bg)
+
+        self.mood_song_listbox.config(bg = travel_bg)
 
     def load_songs(self):
         if os.path.exists("music_data.json"):
@@ -479,7 +660,7 @@ class Prototype(tk.Tk):
 
         if self.option_var.get() == "Songs":
             self.load_frequently_played()
-        if self.option_var.get() == "Playlists":
+        elif self.option_var.get() == "Playlists":
             self.load_frequently_played_playlist()
     
         Save_JSON(self.music_data, "music_data.json").execute()
@@ -765,7 +946,6 @@ class Prototype(tk.Tk):
         for key, val in sorted_frequently.items():
             if val != 0:
                 self.frequently_played_listbox.insert(tk.END, key)
-
 
     def create_playlist(self):
         entry = self.create_playlist_name_entry.get()
