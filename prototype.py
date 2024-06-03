@@ -948,9 +948,6 @@ class Prototype(tk.Tk):
                 self.frequently_played_listbox.selection_set(selected_index)
                 self.frequently_played_listbox.activate(selected_index)
 
-        # Schedule the function to run again after 30 seconds
-        self.after(10000, self.load_frequently_played)
-
     def load_frequently_played_playlist(self):
         self.frequently_played_listbox.delete(0, tk.END)
 
